@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        margin:0
+    }
+    body{
+        background-color: black;
+    }
+    #videos{
+        display: grid;
+        grid-template-columns: repeat(4, 20%);
+        
+        grid-gap:5%;
+        /* margin: 10%; */
+    }
+    input{
+        width:400px;
+        height:45px;
+        margin-left: 460px;
+    }
+    button{
+        width:150px;
+        height:50px;
+        background-color: red;
+        color: white;
+    }
+    #ipnav{
+        width:100%;
+        background-color:darkblue;
+        margin-bottom: 50px;
+       
+    }
+</style>
+<body>
+    <div id="ipnav">
+    <input type="text" id="query" placeholder="search for video">
+
+    <button onclick="searchvideos()">Search</button>
+    </div>
+
+    <div id="videos"></div>
+
+    
+</body>
+</html>
+
+<script>
+    let videos = document.getElementById("videos")
+    // api key  -- https://youtube.googleapis.com/youtube/v3/search?q=csk&type=video&key=AIzaSyANuBmXAUFLTLgYyiK2OsYsCKBJq_Glw6s&maxresult=20
+
+    // my api key
+    // AIzaSyBMAfTHUIvCND0YKV53dufMnA9iK6YF7tQ
+
+    //https://youtube.googleapis.com/youtube/v3/search?q=csk&type=video&key=[YOUR_API_KEY]
+
+//search for videos function
+async function searchvideos(){
+
+    //three parameter we are passing q,type,key
+let query = document.getElementById("query").value
+  
+    let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?q=${query}&type=video&key=AIzaSyBMAfTHUIvCND0YKV53dufMnA9iK6YF7tQ&maxResults=20`)
+
+    let data  = await res.json()
+
+    console.log(data) 
+    
+    appendvideos(data.items)
+}
+
+
+// searchvideos()
+
+function appendvideos(video_data){  //here parameter c0omes as array ob object ie here 5 object
+
+    videos.innerHTML = null
+    // video_data.forEach(function(video){
+
+    // })
+
+    // video_data.forEach((video)=>{
+        // console.log("video",video_data)
+        // console.log("video",video.id.videoId)
+    // })
+
+    video_data.forEach(({ id: { videoId } }) => {       //array destructuring
+    //    console.log(videoId)
+
+         //now create html element to appen in webpage
+    let div = document.createElement("div")
+
+      //embed youtube video on webpage
+
+      div.innerHTML = `<iframe width="350" height="210" src="https://www.youtube.com/embed/${videoId}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+
+      div.style.marginTop = "20px"
+        videos.append(div)
+    })
+
+   
+   
+  
+}
+</script>
