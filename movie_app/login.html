@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+     body{
+        background-color: teal;
+    }
+    #ip{
+        width:350px;
+        height:350px;
+        margin-bottom: 20px;;
+        /* border:1px solid black; */
+        margin: auto;
+        margin-top: 100px;
+        background-color: whitesmoke;
+        box-shadow: 20px 15px 20px navy;
+    }
+    input{
+        width:300px;
+        height:25px;
+        margin: 10px
+      
+
+    }
+    h1{
+        text-align: center;
+        color: navy;
+    }
+    .sub{
+        width:200px;
+        height:40px;
+        margin-left: 80px;
+        background-color: orangered;
+    }
+
+    #dataresult{
+        width:300px;
+        height:250px;
+        border:1px solid black;
+        margin-top: -350px;
+        background-color: wheat;
+        color: black;
+        font-size: 17px;
+        /* text-align: center; */
+        display: none;
+    }
+    #dataresult > h3{
+        text-align: center;
+        color: red;
+        font-size: 25px;
+    }
+</style>
+<body>
+   
+    <div id="ip">
+        <h1>LOGIN</h1>
+<form action="" id="login-form" onsubmit="login(event)">
+    <!-- <input type="text" placeholder="name" id="name"><br> -->
+    <!-- <input type="email" placeholder="email" id="email"><br> -->
+    <input type="text" placeholder="username" id="user"><br>
+    <input type="password" placeholder="password" id="pass"><br>
+   
+    <!-- <input type="number" placeholder="mobile" id="mobile"><br> -->
+    <!-- <input type="text" placeholder="Description" id="description"><br> -->
+    <input type="submit" class="sub" value="LOGIN">
+</form>
+</div>
+<div id="dataresult">
+<h3>resultdata</h3>
+</div>
+</body>
+</html>
+<script>
+    let displaydiv = document.getElementById("dataresult")
+   
+
+    function login(e){
+        e.preventDefault()
+        
+        let form = document.getElementById("login-form")
+
+//first we make object then convert to json beacuse in authentication given
+let user_data = {
+   
+    username:form.user.value,
+    password:form.pass.value,
+   
+  
+}
+
+
+let data_tosend = JSON.stringify(user_data)
+
+// console.log(user_data)
+
+//talk to server need fetch
+
+     fetch("https://masai-api-mocker.herokuapp.com/auth/login" , {
+
+        method:'POST',
+
+        body: data_tosend,     ///here we send data that is json formrat
+
+        headers: {
+    'content-Type':'application/json'
+        }
+
+     })
+     .then((res) => {
+         return res.json()
+     })
+     .then((res) => {
+        //  console.log(res)
+         fetchData(user_data.username, res.token)
+     })
+     .catch((err) => {
+         console.log(err)
+     })
+
+    
+    }
+
+    function fetchData(username, token) {
+        fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`, {
+                headers: {
+                    //get method is by default
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+
+                },
+            }).then((res) => {
+                return res.json()
+            })
+            .then((res) => {
+                console.log( res);
+                // detail(res);
+                displaydata(res);
+                if(res != undefined){
+                    window.location.href = "index.html"
+                }
+            })
+            .catch((err) => {
+
+                console.log(err)
+            });
+    }
+
+function displaydata(data){
+    let dataresult = document.getElementById("dataresult")
+    dataresult.style.display = "block"
+    
+    let bigdiv = document.createElement("div");
+        let user = document.createElement("p");
+        user.innerHTML = `Username: ${data.username}`;
+        console.log(user);
+        let mobile = document.createElement("p")
+        mobile.innerHTML = `mobile: ${data.mobile}`;
+        let email = document.createElement("p")
+        email.innerHTML = `email: ${data.email}`;
+        let description = document.createElement("p")
+        description.innerHTML = `description: ${data.description}`;
+
+        bigdiv.append(user, mobile, email, description);
+        displaydiv.append(bigdiv);
+}
+
+
+</script>

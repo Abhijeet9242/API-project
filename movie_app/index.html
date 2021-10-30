@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    * {
+        margin: 0
+    }
+
+    body {
+        background-color: black;
+    }
+
+    #nav {
+        width: 100%;
+        height: 80px;
+        background-color:#09032c;
+        /* justify-content: space-around;
+        display: flex; */
+    }
+
+
+    /* ------------------------------------------------above nav bar styling done */
+
+    #moviefilm {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(5, 16.5%);
+        grid-gap: 4%;
+        margin-top: 50px;
+
+
+
+    }
+
+    img {
+        width: 260px;
+        height: 400px;
+        margin-bottom: 10px;
+    }
+
+    .name {
+        color: white;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .date {
+        color: white;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .rating {
+        color: white;
+        margin-bottom: 10px;
+        font-size: 20px;
+    }
+
+    .tehead {
+        color: yellow;
+        font-size: 40px;
+        margin-left: 30px;
+        ;
+        margin-top: 20px;
+    }
+
+    .type {
+        color: white;
+    }
+
+    .alienlogo {
+        width: 140px;
+        height: 50px;
+        margin-left: 20px;
+        margin-top: 15px;
+        background-color: white;
+
+    }
+
+    #showmovie {
+        /* width:100%; */
+        /* border:2px solid yellow; */
+        height: 350px;
+        display: flex;
+        /* margin-bottom: 300px; */
+        background-color: #37474F;
+        display: none;
+
+    }
+
+
+    .type {
+        color: white;
+        font-size: 20px;
+    }
+
+    .divimg {
+        width: 300px;
+        height: 300px;
+    }
+
+    .div1 {
+        width: 300px;
+        height: 300px;
+        /* border:1px solid blue; */
+        margin-left: 200px;
+        margin-right: 20px;
+        margin-top: 30px;
+    }
+
+    .div2 {
+
+        width: 700px;
+        height: 200px;
+        /* border:1px solid blue; */
+
+        margin-right: 50px;
+        margin-top: 30px;
+    }
+
+    /* ---------------------------------------------- */
+    input {
+        width: 600px;
+        height: 40px;
+
+    }
+
+    #drop {
+        width: 600px;
+        height: 300px;
+        border: 1px solid white;
+        overflow: scroll;
+        position: absolute;
+        background-color:black;
+        display: none;
+        /* opacity: 0.9; */
+    }
+
+    #ipdrop {
+        margin-left: 400px;
+        margin-top: 6px
+    }
+
+    .login {
+        display: inline-block;
+        color:wheat;
+        font-size: 25px;
+    }
+
+    .login>ul>li {
+        display: inline-block;
+        margin-left: 100px
+        /* margin-top: 0px;; */
+    }
+
+    /* dropdown poster and text styling */
+   #drop > div{
+       display: flex;
+       border:1px solid black;
+      margin-bottom: 10px;
+      width:250px;
+      background-color: grey;
+      height:90px;
+      color: white;
+      
+      
+   }
+  
+  /* .maindiv{
+      width:200px;
+      height:100px;
+      
+  } */
+  .imgs{
+      width:120px;
+      height:80px;
+      padding:5px
+  }
+ 
+  .movie_div{
+      background-color: blue;
+  }
+  a{
+      text-decoration: none;
+      color: wheat;
+  }
+</style>
+
+<body>
+    <div id="nav">
+        <div id="dispal">.</div>
+        <div id="ipdrop">
+            <input type="text" placeholder="enter movie name" oninput="debounce(main,1000)" id="takemovie">
+            <div id="drop">
+
+            </div>
+            <div class="login">
+                <ul>
+                    <li><a href="signup.html">SignUp</a></li>
+                    <li><a href="login.html">SignIn</a></li>
+                   
+                </ul>
+             </div>
+        
+
+
+        </div>
+
+
+
+
+     </div>
+     
+
+    </div>
+
+
+    <div id="showmovie">
+        <div id="divleft"></div>
+        <div id="divright"></div>
+    </div>
+
+    <div id="moviefilm">
+    </div>
+
+</body>
+
+</html>
+
+<script>
+    var timer_id
+
+    let moviefilm = document.getElementById("moviefilm")
+    let showmovie = document.getElementById("showmovie")
+    let divleft = document.getElementById("divleft")
+    let divright = document.getElementById("divright")
+    let movies_div = document.getElementById("drop")
+
+    async function getmovie() {
+        let res = await fetch(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=e57244401adfc359ef9a9fd132bee2f5`);
+        var data = await res.json();
+        let movies = data.results;
+        // console.log(movies)
+        displaymovie(movies)
+    }
+
+
+
+    function displaymovie(movies) {
+
+        movies.forEach(({ title, release_date, vote_average, poster_path, overview }) => {
+            // console.log(title, release_date, vote_average, poster_path,overview)
+
+
+            let div = document.createElement("div")
+
+            div.addEventListener("click", function () {
+                selectmovie(title, release_date, vote_average, poster_path, overview)
+
+            })
+
+            let name = document.createElement("p")
+            let rating = document.createElement("p")
+            let date = document.createElement("p")
+            let img = document.createElement("img")
+
+
+            name.setAttribute("class", "name")
+            date.setAttribute("class", "date")
+            rating.setAttribute("class", "rating")
+
+            name.innerText = title
+            rating.innerText = vote_average
+            date.innerText = release_date
+            img.src = "https://image.tmdb.org/t/p/w500" + poster_path
+
+            div.append(img, name, rating, date)
+            moviefilm.append(div)
+
+
+
+        })
+    }
+
+
+    function selectmovie(title, release_date, vote_average, poster_path, overview) {
+        // console.log( title, release_date, vote_average, poster_path,overview)
+        // console.log(overview)
+        let showmovie = document.getElementById("showmovie")
+        showmovie.innerHTML = " "
+        showmovie.style.display = "flex"
+
+
+
+        let divleft = document.getElementById("divleft")
+
+        let div1 = document.createElement("div")
+        let div2 = document.createElement("div")
+        let name = document.createElement("p")
+        let rating = document.createElement("p")
+        let date = document.createElement("p")
+        let img = document.createElement("img")
+        let type = document.createElement("p")
+
+        name.setAttribute("class", "name")
+        date.setAttribute("class", "date")
+        rating.setAttribute("class", "rating")
+        type.setAttribute("class", "type")
+        img.setAttribute("class", "divimg")
+
+
+        name.innerText = "Name - " + title
+        rating.innerText = "IMDB - " + vote_average
+        date.innerText = "Release Date - " + release_date
+        type.innerText = "Description -" + overview
+        img.src = "https://image.tmdb.org/t/p/w500" + poster_path
+
+        div1.append(img)
+        div1.setAttribute("class", "div1")
+        div2.append(name, rating, date, type)
+        div2.setAttribute("class", "div2")
+
+
+        // divleft.append(div1)
+        // divright.append(div2)
+        showmovie.append(div1, div2)
+
+
+    }
+
+
+
+    getmovie()
+
+
+    // here search for movie or ebouncing code written
+
+    async function searchMovies(movie_name) {
+        try {
+            let res = await fetch(`http://www.omdbapi.com/?apikey=d51aa006&s=${movie_name}`);
+            let data = await res.json();
+            return data;
+        } catch (e) {
+            console.log("e", e);
+
+        }
+showmovie.style.display = "hidden"
+
+
+    }
+
+
+    async function main(){
+
+        // if (name.length < 3) {
+        //     return false;
+        // }
+
+        let movname = document.getElementById("takemovie").value
+
+        // if (name.length < 3) {
+        //     return false;
+        // }
+        
+
+        let res = await searchMovies(movname)
+        // console.log(res)
+        let movie_data  = res.Search
+        // console.log(movie_data)
+        appendmovie1(movie_data)
+    }
+
+    function appendmovie1(movies){
+     
+
+        let dropmovie  = document.getElementById("drop")
+      
+        if(movies === undefined){
+        return false
+    }
+
+   
+    
+
+        movies.forEach((movie) =>{
+            // console.log(movie)
+            // console.log(movie.Poster)
+            // showmovie.innerHTML = " "
+
+
+          let maindiv = document.createElement("div")
+          
+         
+            maindiv.addEventListener("click", function() {
+                selectmovie2(movie);
+               
+            });
+            showmovie.innerHTML = " "
+            
+          let firstdiv = document.createElement("div")  
+          let secdiv = document.createElement("div")  
+
+          firstdiv.setAttribute("classs","firstdiv")
+          secdiv.setAttribute("classs","secdiv")
+          maindiv.setAttribute("classs","maindiv")
+          movies_div.setAttribute("class","movie_div")
+
+
+        let p = document.createElement('p')
+        p.innerText = movie.Title;
+
+        let imgs = document.createElement("img")
+        imgs.src = movie.Poster
+        imgs.setAttribute("class","imgs")
+
+        firstdiv.append(imgs)
+        secdiv.append(p)
+
+        maindiv.append(firstdiv,secdiv)
+
+        movies_div.append(maindiv)
+        })
+      
+
+    }
+
+    //debouncing code
+
+    function debounce(func,delay){
+        
+
+        movies_div.style.display = "block"
+
+
+        if(timer_id){
+        clearTimeout(timer_id)
+    }
+
+    timer_id = setTimeout(function (){
+
+        func()
+        
+    },delay)
+  
+    }
+   
+// here drop down movie list pointing and displaying
+    function selectmovie2(e) {
+        // console.log(e.Poster,e.Title,e.release_date,)
+        // console.log(e)
+        // showmovie.innerHTML = " "
+        movies_div.innerHTML = " "
+        let showmovie = document.getElementById("showmovie")
+        let drop = document.getElementById("drop")
+        drop.style.display = "none"
+        // showmovie.innerHTML = " "
+        showmovie.style.display = "flex"
+
+// console.log(e.imdbRating)
+
+        let divleft = document.getElementById("divleft")
+
+        let div1 = document.createElement("div")
+        let div2 = document.createElement("div")
+        let name = document.createElement("p")
+        let rating = document.createElement("p")
+        let date = document.createElement("p")
+        let img = document.createElement("img")
+        let type = document.createElement("p")
+
+        name.setAttribute("class", "name")
+        date.setAttribute("class", "date")
+        rating.setAttribute("class", "rating")
+        type.setAttribute("class", "type")
+        img.setAttribute("class", "divimg")
+
+
+        name.innerText = "Name - " + e.Title
+        rating.innerText = "IMDB - " + e.imdbID
+        date.innerText = "Release Date - " + e.Year
+        type.innerText = "TYPE -" +e.Type
+        img.src =  e.Poster
+
+        div1.append(img)
+        div1.setAttribute("class", "div1")
+        div2.append(name, rating, date, type)
+        div2.setAttribute("class", "div2")
+
+
+        // divleft.append(div1)
+        // divright.append(div2)
+        showmovie.append(div1, div2)
+
+
+    }
+
+
+</script>
